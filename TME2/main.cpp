@@ -2,6 +2,7 @@
 #include <fstream>
 #include <regex>
 #include <chrono>
+#include "HashMap.hh"
 
 // Question 1: Il compte le nombre de mot dans le fichier texte WarAndPeace.txt qui est donc compose de 566193 mots
 // Question 2: Il compte avec 20333 mots differents en 10405 ms avec le vector
@@ -9,8 +10,13 @@
 // Question 4: Du O(n2), pas ouf la quadratique. On aurait pu utiliser une table de hachage (map en c++)
 
 int main () {
+
 	using namespace std;
 	using namespace std::chrono;
+
+	pr::HashMap<std::string, int>;
+
+	/*
 
 	std::vector<std::pair<std::string, int>> vector;
 	int is_present = true;
@@ -73,6 +79,7 @@ int main () {
 			cout << "Found a total of " << std::get<1>(vector[i]) << " peace words." << endl;
 		}
 	}
+	*/
 
     return 0;
 }
