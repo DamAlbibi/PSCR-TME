@@ -14,10 +14,8 @@ int main () {
 	using namespace std;
 	using namespace std::chrono;
 
-	pr::HashMap<std::string, int>;
-
-	/*
-
+	// pr::HashMap<std::string, int> hashMap = pr::HashMap<std::string, int>(100);
+	
 	std::vector<std::pair<std::string, int>> vector;
 	int is_present = true;
 
@@ -79,7 +77,6 @@ int main () {
 			cout << "Found a total of " << std::get<1>(vector[i]) << " peace words." << endl;
 		}
 	}
-	*/
 
     return 0;
 }
