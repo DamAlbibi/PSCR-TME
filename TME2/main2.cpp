@@ -8,6 +8,10 @@
 // Question 2: Il compte avec 20333 mots differents en 10405 ms avec le vector
 // Question 3: Il compte 298 war words et 114 peace words, ce bouquin c'est plus la guerre que la paix quoi. 0 toto aussi
 // Question 4: Du O(n2), pas ouf la quadratique. On aurait pu utiliser une table de hachage (map en c++)
+// Question 5 et 6 : faite 
+// Question 7 : faite cependant comment utiliser le constructeur par copie range, vu que ma hashMap est un vector avec des forward 
+// list et non directement des couples meme si de maniere implicite il me transforme mes Entry<string, int> en pair<string,int>, 
+// il pourra le faire pour une 1 seul liste nan ? 
 
 int main () {
 
@@ -58,6 +62,19 @@ int main () {
 	cout << "Found a total of " << *(hashMap.get(std::string ("war"))) << " war words." << endl;
 	cout << "Found a total of " << *(hashMap.get(std::string ("peace"))) << " peace words." << endl;
 	cout << "Found a total of " << hashMap.get(std::string ("toto")) << " peace words." << endl;
+
+	// Comment utiliser le constructeur par copie range, vu que ma hashMap est un vector avec des forward list et non directement des couples 
+	// meme si de maniere implicite il me transforme mes Entry<string, int> en pair<string,int>, il pourra le faire pour une 1 seul liste nan ? 
+
+	std::vector<pair<string, int>> vector = hashMap.getCopy();
+
+	std::sort(vector.begin(), vector.end(), [] (const pair<string,int> occ1, const pair<string,int> occ2) {
+		return occ1.second > occ2.second;
+	});
+
+	for (pair<string, int> p: vector) {
+		cout << p.first << " = " << p.second << endl;
+	}
 
     return 0;
 }

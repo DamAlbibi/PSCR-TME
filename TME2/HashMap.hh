@@ -5,6 +5,7 @@
 #include <functional>
 #include <iterator>
 #include <vector>
+#include <utility>
 
 namespace pr  {
     template<typename K, typename V> 
@@ -30,10 +31,9 @@ namespace pr  {
                 }
         };
 
-        //typedef std::vector<std::forward_list<Entry>> buckets_t;
+        typedef std::vector<std::forward_list<Entry>> buckets_t;
 
-        std::vector<std::forward_list<Entry>> buckets;
-        std::vector<int> vector;
+        buckets_t buckets;
         size_t size;
 
         public:
@@ -49,26 +49,28 @@ namespace pr  {
                 size_t h = std::hash<K>()(key);
                 
                 h = h % buckets.size();
-                for (auto iterator_l = buckets[h].begin(); iterator_l != buckets[h].end(); ++iterator_l) {
-                    if (iterator_l->getEntry() == key) {
-                        return iterator_l->getValue();
+
+                for (Entry e: buckets[h]) {
+                    if (e.getEntry() == key) {
+                        return e.getValue();
                     }
                 }
 
                 return nullptr;
             }
 
-            // Pas oublier d'incrementer la size a chaque element ajoute
             bool put (const K& key, const V& value) {
                 size_t h = std::hash<K>()(key);
                 
                 h = h % buckets.size();
+                
                 for (auto iterator_l = buckets[h].begin(); iterator_l != buckets[h].end(); ++iterator_l) {
                     if (iterator_l->getEntry() == key) {
                         *iterator_l = Entry(key, value);
                         return false;
                     }
                 }
+                
 
                 size++;
                 buckets[h].push_front(Entry(key, value));
@@ -78,6 +80,18 @@ namespace pr  {
 
             size_t size_h() {
                 return size;
+            }
+
+            std::vector<std::pair<K, V>> getCopy() {
+
+                std::vector<std::pair<K, V>> vector;
+
+                for (std::forward_list<Entry> f: buckets) {
+                    for (Entry e: f) {
+                        vector.push_back(std::make_pair(e.getEntry(), *(e.getValue())));
+                    }
+                }
+                return vector;
             }
     };
 }
