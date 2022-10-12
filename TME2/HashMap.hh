@@ -93,5 +93,76 @@ namespace pr  {
                 }
                 return vector;
             }
+
+            class Iterator {
+
+                typedef typename std::forward_list<Entry>::iterator f_iterator;
+
+                buckets_t i_buckets;
+                size_t vit;
+                f_iterator lit;
+                
+                public :
+
+                    Iterator(buckets_t i_buckets, size_t vit, f_iterator lit): i_buckets(i_buckets), vit(vit), lit(lit) {}
+
+                    // Find a way, to see if the user go away the end() cursor 
+                    Iterator& operator++() {
+                        
+                        /*
+                        if (end() == *this) {
+                            return *this;
+                        }
+                        */
+
+                        if (i_buckets.size() - 1 == vit) {
+                            ++lit;
+                            return *this;
+                        }
+
+                        if (++lit == i_buckets[vit].end()) {
+                            vit++;
+                            for (size_t i = vit; i < i_buckets.size(); i++) {
+                                if (!(i_buckets[i].empty())) {
+                                    vit = i;
+                                    lit = i_buckets[i].begin();
+                                    return *this;
+                                }
+                            }
+                        }
+
+                        return *this;
+                    }
+
+                    bool operator!=(const Iterator& other) {
+                        return vit != other.vit || lit != other.lit;
+                    }
+
+                    Entry& operator*() {
+                        return *lit;
+                    }
+            };
+
+            Iterator begin() {
+
+                size_t i;
+
+                for (i = 0; i < buckets.size(); i++) {
+                    if (!(buckets[i].empty())) return Iterator(buckets, i, buckets[i].begin());
+                }
+
+                // Find a value to return if there is 0 element 
+                return Iterator(buckets, i, buckets[i].begin());
+            }
+
+            Iterator end() {
+
+                for (size_t i = buckets.size(); 0 <= i; i--) {
+                    if (!(buckets[i].empty())) return Iterator(buckets, i ,buckets[i].end());
+                }
+
+                // Find a value to return if there is 0 element 
+                return Iterator(buckets, 0 ,buckets[0].end());
+            }
     };
 }

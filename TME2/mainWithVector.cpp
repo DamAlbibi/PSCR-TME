@@ -3,6 +3,7 @@
 #include <regex>
 #include <chrono>
 #include "HashMap.hh"
+#include "generique.hh"
 
 // Question 1: Il compte le nombre de mot dans le fichier texte WarAndPeace.txt qui est donc compose de 566193 mots
 // Question 2: Il compte avec 20333 mots differents en 10405 ms avec le vector
@@ -64,7 +65,13 @@ int main () {
 
     cout << "Found a total of " << nombre_lu << " words." << endl;
 
-	for (int i = 0; i < vector.size(); i++) {
+	cout << "Nombre de mot different = " << vector.size() << endl;
+	cout << "Function count generique = " << pr::count(vector.begin(), vector.end()) << endl;
+
+	// To use in useful way this function I must change the version and take the v1 with just a vector<int>
+	//cout << "Function count_if_equal generique = " << pr::count_if_equal(vector.begin(), vector.end(), ) << endl;
+
+	for (size_t i = 0; i < vector.size(); i++) {
 		if (std::get<0>(vector[i]) == "war") {
 			cout << "Found a total of " << std::get<1>(vector[i]) << " war words." << endl;
 		}
