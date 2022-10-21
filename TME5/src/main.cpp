@@ -151,7 +151,7 @@ int main () {
 
 	Pool pool(1000);
 	Barrier b(1000);
-	pool.start(10);
+	pool.start(16);
 	
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	// on pose une graine basee sur la date
