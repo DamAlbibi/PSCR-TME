@@ -104,15 +104,45 @@ void exportImage(const char * path, size_t width, size_t height, Color * pixels)
 
 // MY STUDENT PART
 
-void poolWorker(Queue<Job>& queue) {
-	while(true) {
-		Job* job = queue.pop();
-		if(j==nullptr) break;
-		j->run();
-		delete j;
-	}
-} 
 
+
+// Job tme
+
+class PixelJob : public Job {
+
+	int& x;
+	const Scene::screen_t& screen;
+	Scene& scene;
+	Color* pixels;
+	vector<Vec3D>& lights;
+
+	public:
+		PixelJob(int x, const Scene::screen_t& screen, Scene& scene, Color* pixels, vector<Vec3D>& lights): x(x), screen(screen), scene(scene), pixels(pixels), lights(lights) {}
+		void run() {
+			for (int  y = 0 ; y < scene.getHeight() ; y++) {
+				// le point de l'ecran par lequel passe ce rayon
+				auto & screenPoint = screen[y][x];
+				// le rayon a inspecter
+				Rayon  ray(scene.getCameraPos(), screenPoint);
+
+				int targetSphere = findClosestInter(scene, ray);
+
+				if (targetSphere == -1) {
+					// keep background color
+					continue ;
+				} else {
+					const Sphere & obj = *(scene.begin() + targetSphere);
+					// pixel prend la couleur de l'objet
+					Color finalcolor = computeColor(obj, ray, scene.getCameraPos(), lights);
+					// le point de l'image (pixel) dont on vient de calculer la couleur
+					Color & pixel = pixels[y*scene.getHeight() + x];
+					// mettre a jour la couleur du pixel dans l'image finale.
+					pixel = finalcolor;
+				}
+			}
+		}
+		~PixelJob() {};
+};
 
 
 // NB : en francais pour le cours, preferez coder en english toujours.
@@ -152,32 +182,11 @@ int main () {
 
 	// pour chaque pixel, calculer sa couleur
 	for (int x =0 ; x < scene.getWidth() ; x++) {
-		for (int  y = 0 ; y < scene.getHeight() ; y++) {
-			// le point de l'ecran par lequel passe ce rayon
-			auto & screenPoint = screen[y][x];
-			// le rayon a inspecter
-			Rayon  ray(scene.getCameraPos(), screenPoint);
-
-			int targetSphere = findClosestInter(scene, ray);
-
-			if (targetSphere == -1) {
-				// keep background color
-				continue ;
-			} else {
-				const Sphere & obj = *(scene.begin() + targetSphere);
-				// pixel prend la couleur de l'objet
-				Color finalcolor = computeColor(obj, ray, scene.getCameraPos(), lights);
-				// le point de l'image (pixel) dont on vient de calculer la couleur
-				Color & pixel = pixels[y*scene.getHeight() + x];
-				// mettre a jour la couleur du pixel dans l'image finale.
-				pixel = finalcolor;
-			}
-
-
-			Job* j = new PixelJob();
-			pool.submit();
-		}
+		Job* j = new PixelJob(x, screen, scene, pixels, lights);
+		pool.submit(j);
 	}
+
+	// this_thread::sleep_for(5s);
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	    std::cout << "Total time "

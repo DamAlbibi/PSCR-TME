@@ -2,6 +2,7 @@
 #define SRC_QUEUE_H_
 
 #include <cstdlib>
+#include <cstring>
 #include <mutex>
 #include <condition_variable>
 
@@ -38,7 +39,7 @@ public:
 		std::unique_lock<std::mutex> lg(m);
 
 		while (empty() && block) {
-			cv.wait(l);
+			cv.wait(lg);
 		}
 
 		if (empty() && !block) {
@@ -59,7 +60,7 @@ public:
 		std::unique_lock<std::mutex> lg(m);
 
 		while (full() && block) {
-			cv.wait(l);
+			cv.wait(lg);
 		}
 
 		if (full() && !block) {
