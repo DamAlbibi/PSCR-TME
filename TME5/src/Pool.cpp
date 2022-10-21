@@ -1,4 +1,5 @@
 #include "Pool.h"
+#include <iostream>
 
 namespace pr {
     
@@ -34,6 +35,4 @@ namespace pr {
     Pool::~Pool() {
         stop();
     }
-    
-
 }

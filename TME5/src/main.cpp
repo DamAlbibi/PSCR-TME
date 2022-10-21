@@ -9,6 +9,7 @@
 
 #include "Pool.h"
 #include "Queue.h"
+#include "Barrier.h"
 
 using namespace std;
 using namespace pr;
@@ -102,22 +103,19 @@ void exportImage(const char * path, size_t width, size_t height, Color * pixels)
 }
 
 
-// MY STUDENT PART
-
-
-
 // Job tme
 
 class PixelJob : public Job {
 
-	int& x;
+	int x;
 	const Scene::screen_t& screen;
 	Scene& scene;
 	Color* pixels;
 	vector<Vec3D>& lights;
+	Barrier& b;
 
 	public:
-		PixelJob(int x, const Scene::screen_t& screen, Scene& scene, Color* pixels, vector<Vec3D>& lights): x(x), screen(screen), scene(scene), pixels(pixels), lights(lights) {}
+		PixelJob(int x, const Scene::screen_t& screen, Scene& scene, Color* pixels, vector<Vec3D>& lights, Barrier& b): x(x), screen(screen), scene(scene), pixels(pixels), lights(lights), b(b) {}
 		void run() {
 			for (int  y = 0 ; y < scene.getHeight() ; y++) {
 				// le point de l'ecran par lequel passe ce rayon
@@ -140,6 +138,7 @@ class PixelJob : public Job {
 					pixel = finalcolor;
 				}
 			}
+			b.done();
 		}
 		~PixelJob() {};
 };
@@ -150,14 +149,10 @@ class PixelJob : public Job {
 
 int main () {
 
-
-	// MY STUDENT PART
 	Pool pool(1000);
+	Barrier b(1000);
+	pool.start(10);
 	
-	
-
-	// TEACHER PART
-
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	// on pose une graine basee sur la date
 	default_random_engine re(std::chrono::system_clock::now().time_since_epoch().count());
@@ -178,15 +173,15 @@ int main () {
 	const Scene::screen_t & screen = scene.getScreenPoints();
 
 	// Les couleurs des pixels dans l'image finale
-	Color * pixels = new Color[scene.getWidth() * scene.getHeight()];
+	Color* pixels = new Color[scene.getWidth() * scene.getHeight()];
 
+	
 	// pour chaque pixel, calculer sa couleur
 	for (int x =0 ; x < scene.getWidth() ; x++) {
-		Job* j = new PixelJob(x, screen, scene, pixels, lights);
+		Job* j = new PixelJob(x, screen, scene, pixels, lights, b);
 		pool.submit(j);
 	}
-
-	// this_thread::sleep_for(5s);
+	b.waitFor();
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	    std::cout << "Total time "
@@ -194,6 +189,7 @@ int main () {
 	              << "ms.\n";
 
 	exportImage("toto.ppm",scene.getWidth(), scene.getHeight() , pixels);
+	
 
 	return 0;
 }
