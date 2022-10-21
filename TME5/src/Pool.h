@@ -11,7 +11,7 @@ class Pool {
 	Queue<Job> queue;
 	std::vector<std::thread> threads;
 public:
-	Pool(int qsize) ;
+	Pool(int qsize): queue(Queue(qsize)); ;
 	void start (int nbthread);
 	void submit (Job * job) ;
 	void stop() ;

@@ -7,6 +7,9 @@
 #include <limits>
 #include <random>
 
+#include "Pool.h"
+#include "Queue.h"
+
 using namespace std;
 using namespace pr;
 
@@ -98,10 +101,32 @@ void exportImage(const char * path, size_t width, size_t height, Color * pixels)
 	img.close();
 }
 
+
+// MY STUDENT PART
+
+void poolWorker(Queue<Job>& queue) {
+	while(true) {
+		Job* job = queue.pop();
+		if(j==nullptr) break;
+		j->run();
+		delete j;
+	}
+} 
+
+
+
 // NB : en francais pour le cours, preferez coder en english toujours.
 // pas d'accents pour eviter les soucis d'encodage
 
 int main () {
+
+
+	// MY STUDENT PART
+	Pool pool(1000);
+	
+	
+
+	// TEACHER PART
 
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	// on pose une graine basee sur la date
@@ -148,6 +173,9 @@ int main () {
 				pixel = finalcolor;
 			}
 
+
+			Job* j = new PixelJob();
+			pool.submit();
 		}
 	}
 
