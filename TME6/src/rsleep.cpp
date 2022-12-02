@@ -10,6 +10,8 @@ void randsleep() {
   // 300 millions de ns = 0.3 secondes
   tosleep.tv_nsec = 300000000 + ratio*700000000;
   struct timespec remain;
+  // Ici on fait un while != 0 comme ca meme si on est reveille par un signal alors on sait que c'est pas bon 
+  // car la valeur de retour quand reveille par un signal est -1
   while ( nanosleep(&tosleep, &remain) != 0) {
     tosleep = remain;
   }
