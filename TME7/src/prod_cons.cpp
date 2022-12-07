@@ -35,7 +35,7 @@ void consomateur (Stack<char> * stack) {
 	signal(SIGINT, end);
 	while (true) {
 		char c = stack->pop();
-		cout << c << flush ;
+		cout << c << flush;
 	}
 }
 
