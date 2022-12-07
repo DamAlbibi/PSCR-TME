@@ -4,7 +4,7 @@
 #include "rsleep.h"
  
 /*
-    Question 6 : Le combat n'est plus equitable vu que Luke atteint que son pere attaque avant d'attaquer a nouveau 
+    Question 6 : Le combat n'est plus equitable vu que Luke attend que son pere attaque avant d'attaquer a nouveau 
     (et donc se mettre en danger), Luke a donc l'avantage, il est sur de bloquer au moins 1 coup.
 */
 
@@ -49,6 +49,7 @@ void luke_defense() {
     struct sigaction sigact;
     sigact.sa_handler = &defense_reussis;
     sigact.sa_mask = sigs;
+    sigact.sa_flags = SA_NOCLDWAIT;
 
     sigaction(SIGINT, &sigact, nullptr);
     
